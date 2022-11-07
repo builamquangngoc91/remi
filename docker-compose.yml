@@ -1,0 +1,42 @@
+version: '3'
+services:
+  postgres:
+    container_name: remi_postgres
+    image: postgres:12
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=remi
+      # - POSTGRES_DATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - reminet
+
+  remi:
+    container_name: remi_app
+    image: quangngoc430/remi
+    hostname: remi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      GET_HOST_FROM: dns
+    networks:
+      - reminet
+    volumes:
+      - .:/go/src/remi
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    labels:
+      kompose.service.type: LoadBalancer
+
+networks:
+  reminet:
+    driver: bridge
+    

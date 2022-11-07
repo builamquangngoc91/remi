@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <title>Home</title>
+</head>
+<body>
+    <div class="main">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                    Funny Movies
+                </a>
+
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="share-btn" href="/movies">Share a movie</a>
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-in-btn" href="/login">Sign in</a>
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-up-btn" href="/register">Sign up</a>
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-out-btn" href="#">Sign out</a>
+                </div>
+            </div>
+        </nav>
+
+        <div id="movies" class="container" >
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            loadMovies();
+
+            let token = window.localStorage.token
+
+            if (token === null || token === "") {
+                $("#share-btn").hide();
+                $("#sign-out-btn").hide();
+            } else {
+                $("#sign-in-btn").hide();
+                $("#sign-up-btn").hide();
+            }
+        });
+
+        $("#sign-out-btn").click(function(e) {
+            e.preventDefault();
+
+            window.localStorage.token = "";
+            location.href = "/";
+        });
+
+        var offset = 1;
+        const limit = 7;
+            
+        function loadMovies() {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/api/v1/listMovies",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    limit: 7,
+                    offset: offset,
+                }),
+            }).done(function(data) {
+                movies = data.data.movies;
+
+                if (movies === null || movies.length === 0) {
+                    return
+                }
+                console.log(movies);
+
+                let moviesHtml = $('#movies');
+
+                for (let movie of movies) {
+                    let movieHtml = `
+                <div class="row mt-5">
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <img src="${movie.thumbnail}" width="400" height="300"></img>
+                    </div>
+                    <div class="col-4">
+                        <h2 class="film-title">${movie.name}</h2>
+                        <h3 class="shared-by">Shared by: ${movie.shared_by}</h3>
+                        <h3 class="description-title">Description:</h3>
+                        <p class="description">${movie.description}</p>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            `;
+                    moviesHtml.append(movieHtml);
+                }
+
+                offset = offset + limit;
+            }).fail(function (jqXHR, textStatus, error) {
+                console.log(jqXHR, textStatus, error)
+            });
+        }
+
+        window.addEventListener('scroll',()=>{
+            if(window.scrollY + window.innerHeight >= 
+            document.documentElement.scrollHeight){
+                loadMovies();                                   
+            }
+        })
+    </script>
+
+    <style>
+        .film-title {
+            font-size: 1.5rem;
+            line-height: 2rem;
+            font-weight: 600;
+            font-family: roboto, sans-serif;
+        }
+        .shared-by {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            line-height: 2rem;
+            font-weight: 600;
+            font-family: roboto, sans-serif;
+        }
+        .description-title {
+            margin-top: -1rem;
+            font-size: 1rem;
+            line-height: 2rem;
+            font-weight: 600;
+            font-family: roboto, sans-serif;
+        }
+        .description {
+            font-size: 1rem;
+            line-height: 1rem;
+            font-weight: 400;
+            font-family: roboto, sans-serif;
+        }
+    </style>
+</body>
+</html>

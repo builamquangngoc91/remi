@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <title>Home</title>
+</head>
+<body>
+    <div class="main">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                    Funny Movies
+                </a>
+
+                <div class="d-flex align-items-center">
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" href="/login">Sign in</a>
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" href="/register">Sign up</a>
+                </div>
+            </div>
+        </nav>
+
+        <div id="create-movie-form" class="container">
+            
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-5 m-4">
+                    <div class="row mt-5">
+                        <div class="border rounded p-3">
+                            <h1 class="text-center mb-5">Share Movie</h1>
+                            <div class="mb-3 form-floating flex-fill">
+                                <input type="text" class="form-control" id="name" placeholder="Name">
+                                <label for="name">Name</label>
+                            </div>
+                            <div class="mb-3 form-floating flex-fill">
+                                <input type="text" class="form-control" id="link" placeholder="Link video (support: youtube)">
+                                <label for="link">Link video (support: youtube)</label>
+                            </div>
+                            <div class="mb-3 form-floating flex-fill">
+                                <textarea class="form-control" id="description" rows="10" placeholder="Description" style="height: 100%;"></textarea>
+                                <label for="description">Description</label>
+                            </div>
+        
+                            <a class="btn btn-primary" style="width: 100%;" id="share-btn">Share</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-5 m-4">
+                    <div class="row mt-5">
+                        <div class="border rounded p-3">
+                            <h1 class="text-center mb-5">Preview</h1>
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="col-10">
+                                    <img id="image-preview" class="d-block" src="https://dummyimage.com/400x300/000000" width="400" height="300">
+                                    <h1 id="name-preview"></h1>
+                                    <h2 id="description-title"></h2>
+                                    <p id="description-preview"></p>
+                                </div>
+                                <col-1></col-1>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#name").bind("change paste keyup",function() {
+            loadPreview();
+        });
+        $("#description").bind("change paste keyup", function() {
+            loadPreview();
+        })
+        $("#link").bind("change paste keyup", function() {
+            loadPreview();
+        })
+
+        function loadPreview() {
+            console.log("loadPreview");
+            let imagePreview = $("#image-preview");
+            let namePreview = $("#name-preview");
+            let descriptionPreview = $("#description-preview")
+            let name = $("#name").val();
+            let link = $("#link").val();
+            let description = $("#description").val();
+
+            namePreview.text(name);
+            descriptionPreview.text(description);
+            
+            let thumbnailUrl = "https://dummyimage.com/400x300/000000";
+            // convert youtubeLink to thumbnail 
+            if (link.indexOf("youtube.com") != -1) {
+                if (link.indexOf("http") == -1) {
+                    link = "https://" + link
+                }
+                const url = new URL(link);
+                let youtubeVideoID = url.searchParams.get("v");
+
+                if (youtubeVideoID != "") {
+                    thumbnailUrl = "https://img.youtube.com/vi/" + youtubeVideoID + "/0.jpg";
+                }
+            }
+
+            imagePreview.attr("src", thumbnailUrl);
+        }
+
+        $("#share-btn").click(function(e) {
+            let name = $("#name").val();
+            let link = $("#link").val();
+            let description = $("#description").val();
+
+            console.log("123")
+
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/api/v1/createMovie",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    name: name,
+                    link: link,
+                    description: description,
+                }),
+                headers: {
+                    "authorization": window.localStorage.getItem("token"),
+                },
+                success: function(data, textStatus) {
+                    console.log(data, textStatus)
+                },
+                fail: function(xhr, textStatus, errorThrow) {
+                    console.log(xhr, textStatus, errorThrow)
+                },
+            }).done(function(data) {
+                console.log(data)
+            }).fail(function (jqXHR, textStatus, error) {
+                console.log(jqXHR, textStatus, error)
+            });
+        })
+    </script>
+
+    <style>
+        #name-preview {
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            line-height: 2rem;
+            font-weight: 600;
+            font-family: roboto, sans-serif;
+        }
+        .description {
+            font-size: 1rem;
+            line-height: 1rem;
+            font-weight: 400;
+            font-family: roboto, sans-serif;
+        }
+    </style>
+   
+</body>
+</html>
