@@ -23,12 +23,14 @@ var _ up.UserService = &UserService{}
 type UserService struct {
 	userRepo *repositories.UserRepository
 	jwtKey   string
+	url      string
 }
 
-func NewUserService(db *sql.DB, jwtKey string) *UserService {
+func NewUserService(db *sql.DB, jwtKey, url string) *UserService {
 	return &UserService{
 		userRepo: repositories.NewUserRepository(db),
 		jwtKey:   jwtKey,
+		url:      url,
 	}
 }
 
@@ -120,17 +122,33 @@ type TodoPageData struct {
 	Todos     []Todo
 }
 
+type Data struct {
+	URL string
+}
+
 func (s *UserService) GetLoginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/sign_in.html"))
-	tmpl.Execute(w, nil)
+		
+	data := Data{
+		URL: s.url,
+	}
+	tmpl.Execute(w, data)
 }
 
 func (s *UserService) GetRegisterPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/sign_up.html"))
-	tmpl.Execute(w, nil)
+		
+	data := Data{
+		URL: s.url,
+	}
+	tmpl.Execute(w, data)
 }
 
 func (s *UserService) GetHomePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/home.html"))
-	tmpl.Execute(w, nil)
+	
+	data := Data{
+		URL: s.url,
+	}
+	tmpl.Execute(w, data)
 }

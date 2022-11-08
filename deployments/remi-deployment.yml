@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remi
+  template:
+    metadata:
+      labels:
+        app: remi
+    spec:
+      containers:
+      - name: remi
+        image: quangngoc430/remi:v1.0.2
+        ports:
+          - containerPort: 8080
+        env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_PROTOCOL
+            value: postgres
+          - name: POSTGRES_USERNAME
+            value: postgres
+          - name: POSTGRES_PASSWORD
+            value: postgres
+          - name: POSTGRES_DATABASE
+            value: remi
+          - name: JWT_SECRET
+            value: secret
+          - name: HTTP_PORT
+            value: "8080"
+          - name: URL
+            value: http://34.100.202.154:8080
+        imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service                    
+metadata:
+  name: remi-service  
+spec:
+  type: LoadBalancer
+  ports:                        
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: remi        

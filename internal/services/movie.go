@@ -22,12 +22,14 @@ var _ up.MovieService = &MovieService{}
 type MovieService struct {
 	movieRepo *repositories.MovieRepository
 	userRepo  *repositories.UserRepository
+	url       string
 }
 
-func NewMovieService(db *sql.DB) *MovieService {
+func NewMovieService(db *sql.DB, url string) *MovieService {
 	return &MovieService{
 		userRepo:  repositories.NewUserRepository(db),
 		movieRepo: repositories.NewMovieRepository(db),
+		url:       url,
 	}
 }
 
@@ -190,5 +192,9 @@ func (s *MovieService) ListMovies(ctx context.Context, req *up.ListMoviesRequest
 
 func (s *MovieService) GetCreateMoviePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/movie_create.html"))
-	tmpl.Execute(w, nil)
+
+	data := Data{
+		URL: s.url,
+	}
+	tmpl.Execute(w, data)
 }

@@ -40,9 +40,9 @@ type RemiService struct {
 	acl          map[string]map[string]Decl
 }
 
-func NewRemiService(db *sql.DB, JWTKey string) *RemiService {
-	userService := NewUserService(db, JWTKey)
-	movieService := NewMovieService(db)
+func NewRemiService(db *sql.DB, JWTKey, url string) *RemiService {
+	userService := NewUserService(db, JWTKey, url)
+	movieService := NewMovieService(db, url)
 
 	return &RemiService{
 		jwtKey:       JWTKey,

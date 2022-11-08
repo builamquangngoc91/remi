@@ -58,8 +58,8 @@
           
                             <div class="d-flex flex-row align-items-center mb-4">
                               <div class="form-floating flex-fill mb-0">
-                                <input type="password" id="repeatPassword" class="form-control" placeholder="Repeat your password"/>
-                                <label for="repeatPassword">Repeat your password</label>
+                                <input type="password" id="repeat-password" class="form-control" placeholder="Repeat your password"/>
+                                <label for="repeat-password">Repeat your password</label>
                               </div>
                             </div>
                             
@@ -93,21 +93,18 @@
             e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: "http://localhost:8080/api/v1/register",
+                url: "{{.URL}}/api/v1/register",
                 contentType: "application/json",
                 data: JSON.stringify({
                     name: name,
                     username: username,
                     password: password,
                 }),
-                success: function(data, textStatus) {
-                    console.log(data, textStatus)
-                },
-                fail: function(xhr, textStatus, errorThrow) {
-                    console.log(xhr, textStatus, errorThrow)
-                },
             }).done(function(data) {
-                console.log(data)
+              $("#name").val("");
+              $("#username").val("");
+              $("#password").val("");
+              $("#repeat-password").val("");
             }).fail(function (jqXHR, textStatus, error) {
                 console.log(jqXHR, textStatus, error)
             });
