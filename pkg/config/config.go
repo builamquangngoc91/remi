@@ -12,8 +12,7 @@ import (
 type Postgres = cmsql.ConfigPostgres
 
 func LoadPostgres() (*Postgres, error) {
-	portStr := Coalesce(os.Getenv("POSTGRES_PORT"), "5432")
-	port, err := strconv.Atoi(portStr)
+	port, err := strconv.Atoi(Coalesce(os.Getenv("POSTGRES_PORT"), "5432"))
 	if err != nil {
 		return nil, fmt.Errorf("POSTGRES_PORT must be number")
 	}

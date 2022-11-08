@@ -8,6 +8,6 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d
       - name: check docker ps
-        run: docker ps
+        run: ls -la
       - name: Test
         run: go test -v -cover ./features 
