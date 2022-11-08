@@ -1,5 +1,6 @@
--- users definition
+-- +migrate Up
 
+-- +migrate StatementBegin
 CREATE TABLE "users" (
    id TEXT PRIMARY KEY,
    username TEXT NOT NULL UNIQUE,
@@ -8,3 +9,8 @@ CREATE TABLE "users" (
    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+-- +migrate StatementEnd
+
+-- +migrate Down
+
+DROP TABLE "users";

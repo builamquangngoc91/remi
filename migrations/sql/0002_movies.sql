@@ -1,5 +1,6 @@
--- movies definition
+-- +migrate Up
 
+-- +migrate StatementBegin
 CREATE TABLE "movies" (
    id TEXT PRIMARY KEY,
    name TEXT NOT NULL,
@@ -12,3 +13,8 @@ CREATE TABLE "movies" (
    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    deleted_at TIMESTAMPTZ
 );
+-- +migrate StatementEnd
+
+-- +migrate Down
+
+DROP TABLE "movies";
