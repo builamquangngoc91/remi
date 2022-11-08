@@ -51,7 +51,7 @@ func (r *MovieRepository) FindByIDAndUserID(ctx context.Context, id, userID stri
 	row := r.QueryRowContext(ctx, stmt, id, userID)
 
 	if err := row.Scan(values...); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("row.Scan: %w", err)
 	}
 
 	return movie, nil

@@ -76,3 +76,53 @@ func TestMovieRepository_Create(t *testing.T) {
 		}
 	}
 }
+
+func TestMovieRepository_FindByIDAndUserID(t *testing.T) {
+	db, mock := NewMock()
+	repo := MovieRepository{DB: db}
+
+	type Args struct {
+		ID     string
+		UserID string
+	}
+	args := &Args{
+		ID:     "id",
+		UserID: "user-id",
+	}
+
+	testCases := []TestCase{
+		{
+			name:        "happy case",
+			req:         args,
+			expectedErr: nil,
+			setup: func(ctx context.Context) {
+				mock.ExpectQuery(regexp.QuoteMeta("SELECT id,name,description,link,thumbnail,shared_by,shared_at,created_at,updated_at,deleted_at FROM movies WHERE id = $1 AND shared_by = $2")).
+					WithArgs(args.ID, args.UserID).
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "link", "thumbnail", "shared_by", "shared_at", "created_at", "updated_at", "deleted_at"}).AddRow(idutil.NewID(), "name", "description", "link", "thumbnail", "1", time.Now(), time.Now(), time.Now(), nil))
+			},
+		},
+		{
+			name:        "exec error",
+			req:         args,
+			expectedErr: fmt.Errorf("row.Scan: %w", sql.ErrNoRows),
+			setup: func(ctx context.Context) {
+				mock.ExpectQuery(regexp.QuoteMeta("SELECT id,name,description,link,thumbnail,shared_by,shared_at,created_at,updated_at,deleted_at FROM movies WHERE id = $1 AND shared_by = $2")).
+					WithArgs(args.ID, args.UserID).
+					WillReturnError(sql.ErrNoRows)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		ctx := context.Background()
+		testCase.setup(ctx)
+		args := testCase.req.(*Args)
+		movie, err := repo.FindByIDAndUserID(ctx, args.ID, args.UserID)
+		if testCase.expectedErr != nil {
+			assert.Equal(t, testCase.expectedErr.Error(), err.Error())
+		} else {
+			assert.Equal(t, testCase.expectedErr, err)
+			assert.NotNil(t, movie)
+		}
+	}
+}
