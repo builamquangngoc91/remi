@@ -8,6 +8,6 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d
       - name: Wait container running
-        run: while [ "`docker inspect -f {{.State.Running}} remi_app`" != "true" ]; do     sleep 2; done
+        run: while [ "`docker inspect -f {{.State.Running}} remi_app`" != "true" ]; do  docker ps; sleep 2; done
       - name: Test
         run: go test -v -cover ./features/...
