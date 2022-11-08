@@ -201,9 +201,11 @@ func (s *RemiService) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			})
 			return
 		} else {
-			json.NewEncoder(resp).Encode(map[string]interface{}{
-				"data": resultFunc,
-			})
+			// json.NewEncoder(resp).Encode(map[string]interface{}{
+			// 	"data": resultFunc,
+			// })
+
+			json.NewEncoder(resp).Encode(resultFunc)
 		}
 
 	case HTML:

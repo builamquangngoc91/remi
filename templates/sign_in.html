@@ -84,7 +84,7 @@
                     password: password,
                 }),
             }).done(function(data) {
-                window.localStorage.setItem('token', data.data.token);
+                window.localStorage.setItem('token', data.token);
                 window.location.href = "/"
             }).fail(function (jqXHR, textStatus, error) {
                 console.log(jqXHR, textStatus, error)

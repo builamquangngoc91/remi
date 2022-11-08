@@ -36,7 +36,7 @@ jobs:
       - name: Apply migrations
         run: sql-migrate up -env="ci" -config=./migrations/dbconfig-ci.yml
       - name: "Integration tests"
-        run: go test -race -tags=integration ./...
+        run: go test -race ./...
         env:
           TEST_DB_URI: postgres://postgres:postgres@localhost:5432/test?sslmode=disable
       - name: Rollback migrations
