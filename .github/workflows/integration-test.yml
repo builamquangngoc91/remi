@@ -7,7 +7,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build the stack
         run: docker-compose up -d
-      - name: check docker ps
-        run: ls -la
       - name: Test
         run: go test -v -cover ./features 
