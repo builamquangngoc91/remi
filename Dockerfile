@@ -8,6 +8,6 @@ COPY . /go/src/remi
 
 RUN go install remi
 
-CMD /go/bin/remi --config-file ./config/config.yml
+CMD /go/bin/remi
 
 EXPOSE 8080
