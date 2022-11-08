@@ -8,8 +8,8 @@ type User struct {
 	Username  string
 	Password  string
 	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 }
 
 type Users []*User

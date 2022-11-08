@@ -59,8 +59,8 @@ func (s *UserService) Register(ctx context.Context, req *up.RegisterRequest) (*u
 		Username:  req.Username,
 		Password:  password,
 		Name:      req.Name,
-		CreatedAt: now,
-		UpdatedAt: now,
+		CreatedAt: &now,
+		UpdatedAt: &now,
 	})
 	if err != nil {
 		return nil, xerror.Error(xerror.Internal, err)
@@ -128,7 +128,7 @@ type Data struct {
 
 func (s *UserService) GetLoginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/sign_in.html"))
-		
+
 	data := Data{
 		URL: s.url,
 	}
@@ -137,7 +137,7 @@ func (s *UserService) GetLoginPage(w http.ResponseWriter, r *http.Request) {
 
 func (s *UserService) GetRegisterPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/sign_up.html"))
-		
+
 	data := Data{
 		URL: s.url,
 	}
@@ -146,7 +146,7 @@ func (s *UserService) GetRegisterPage(w http.ResponseWriter, r *http.Request) {
 
 func (s *UserService) GetHomePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/home.html"))
-	
+
 	data := Data{
 		URL: s.url,
 	}

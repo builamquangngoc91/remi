@@ -126,3 +126,52 @@ func TestMovieRepository_FindByIDAndUserID(t *testing.T) {
 		}
 	}
 }
+
+func TestMovieRepository_List(t *testing.T) {
+	db, mock := NewMock()
+	repo := MovieRepository{DB: db}
+
+	userID := "user-id"
+	offset := 10
+	limit := 5
+	args := &ListMoviesArgs{
+		UserID: &userID,
+		Offset: &offset,
+		Limit:  &limit,
+	}
+
+	testCases := []TestCase{
+		{
+			name:        "happy case",
+			req:         args,
+			expectedErr: nil,
+			setup: func(ctx context.Context) {
+				mock.ExpectQuery(regexp.QuoteMeta("SELECT id,name,description,link,thumbnail,shared_by,shared_at,created_at,updated_at,deleted_at FROM movies WHERE ($1::TEXT IS NULL OR shared_by = $1::TEXT) AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 5 OFFSET 10")).
+					WithArgs(args.UserID).
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "link", "thumbnail", "shared_by", "shared_at", "created_at", "updated_at", "deleted_at"}).AddRow(idutil.NewID(), "name", "description", "link", "thumbnail", "1", time.Now(), time.Now(), time.Now(), nil))
+			},
+		},
+		{
+			name:        "exec error",
+			req:         args,
+			expectedErr: fmt.Errorf("r.QueryContext: %w", sql.ErrNoRows),
+			setup: func(ctx context.Context) {
+				mock.ExpectQuery(regexp.QuoteMeta("SELECT id,name,description,link,thumbnail,shared_by,shared_at,created_at,updated_at,deleted_at FROM movies WHERE ($1::TEXT IS NULL OR shared_by = $1::TEXT) AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 5 OFFSET 10")).
+					WithArgs(args.UserID).
+					WillReturnError(sql.ErrNoRows)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		ctx := context.Background()
+		testCase.setup(ctx)
+		movie, err := repo.List(ctx, testCase.req.(*ListMoviesArgs))
+		if testCase.expectedErr != nil {
+			assert.Equal(t, testCase.expectedErr.Error(), err.Error())
+		} else {
+			assert.Equal(t, testCase.expectedErr, err)
+			assert.NotNil(t, movie)
+		}
+	}
+}

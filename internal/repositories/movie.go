@@ -47,7 +47,7 @@ func (r *MovieRepository) FindByIDAndUserID(ctx context.Context, id, userID stri
 	movie := &entities.Movie{}
 	fields, values := movie.FieldMap()
 
-	stmt := fmt.Sprintf(`SELECT %s FROM %s WHERE id = $1 AND shared_by = $2`, strings.Join(fields, ","), movie.TableName())
+	stmt := fmt.Sprintf(`SELECT %s FROM %s WHERE id = $1 AND shared_by = $2 AND deleted_at IS NULL`, strings.Join(fields, ","), movie.TableName())
 	row := r.QueryRowContext(ctx, stmt, id, userID)
 
 	if err := row.Scan(values...); err != nil {
