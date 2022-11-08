@@ -32,7 +32,7 @@ jobs:
         with:
           go-version: "1.18"
       - name: Install sql-migrate
-        run: go install -v github.com/rubenv/sql-migrate/...
+        run: go install -v github.com/rubenv/sql-migrate/...@latest
       - name: Apply migrations
         run: sql-migrate up -env="ci" -config=./migrations/dbconfig-ci.yml
       - name: "Integration tests"
