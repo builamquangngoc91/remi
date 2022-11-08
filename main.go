@@ -7,6 +7,8 @@ import (
 
 	"remi/internal/services"
 	"remi/pkg/config"
+
+	"github.com/pressly/goose/v3"
 )
 
 func main() {
@@ -18,6 +20,14 @@ func main() {
 	db, err := sql.Open(cfg.Postgres.ConnectionString())
 	if err != nil {
 		log.Panicf("error opening db %v", err)
+	}
+
+	if err := goose.SetDialect("postgres"); err != nil {
+		log.Panicf("goose.SetDialect: %w", err)
+	}
+
+	if err := goose.Up(db, "migrations"); err != nil {
+		log.Panicf("goose.Up: %w", err)
 	}
 
 	remiService := services.NewRemiService(db, cfg.JWTSecret, cfg.URL)
