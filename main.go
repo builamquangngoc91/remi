@@ -33,8 +33,8 @@ func main() {
 	remiService := services.NewRemiService(db, cfg.JWTSecret, cfg.URL)
 
 	log.Printf("HTTP server listening at %v", cfg.HTTP.Address())
-	err = http.ListenAndServe(cfg.HTTP.Address(), remiService)
-	if err != nil {
+
+	if err := http.ListenAndServe(cfg.HTTP.Address(), remiService); err != nil {
 		log.Panicf("error when starting server %v", err)
 	}
 }
