@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"remi/pkg/cmsql/cmsql"
+	"remi/pkg/cmsql"
 )
 
 type Postgres = cmsql.ConfigPostgres

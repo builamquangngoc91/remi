@@ -12,4 +12,8 @@ integration-test:
 	docker stop remi_app || true && docker rm remi_app || true
 	docker-compose up -d
 	go test -v -cover ./features
-	
+
+test:
+	pwd
+	cd deployments
+	ls -la

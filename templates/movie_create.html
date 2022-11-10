@@ -86,7 +86,11 @@
         if (window.localStorage.token === null || window.localStorage.token === "") {
             window.location.href = "/";
         } else {
-            $("#username-nav").text("Welcome " + window.localStorage.username);
+            if (window.localStorage.username !== undefined) {
+                $("#username-nav").text("Welcome " + window.localStorage.username);
+            } else {
+                $("#username-nav").hide();
+            }
         }
 
         function showToast(message, typ) {

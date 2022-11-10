@@ -40,7 +40,11 @@
                 $("#share-btn").hide();
                 $("#sign-out-btn").hide();
             } else {
-                $("#username-nav").text("Welcome " + window.localStorage.username);
+                if (window.localStorage.username !== undefined) {
+                    $("#username-nav").text("Welcome " + window.localStorage.username);
+                } else {
+                    $("#username-nav").hide();
+                }
                 $("#sign-in-btn").hide();
                 $("#sign-up-btn").hide();
             }
