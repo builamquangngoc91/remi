@@ -119,6 +119,13 @@ func NewRemiService(db *sql.DB, JWTKey, url string) *RemiService {
 					ResponseType: HTML,
 				},
 			},
+			"/movie": {
+				http.MethodGet: Decl{
+					HandlerFunc:  movieService.GetViewMoviePage,
+					Auth:         None,
+					ResponseType: HTML,
+				},
+			},
 		},
 	}
 }

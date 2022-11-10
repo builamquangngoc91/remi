@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <title>Home</title>
+    <title>{{.Name}}</title>
 </head>
 <body>
     <div class="main">
@@ -15,11 +15,11 @@
             <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                    <p class="d-inline" style="font-weight: bold;">Funny Movies</p> 
+                    <p class="d-inline" style="font-weight: bold;">Funny Movies</p>
                 </a>
 
                 <div class="d-flex align-items-center">
-                    <p class="my-sm-0 me-2 mr-4" id="username-nav" style="font-weight: bold;"></p>
+                    <p class="my-sm-0 me-2" id="username-nav" style="font-weight: bold;"></p>
                     <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="share-btn" href="/movies">Share a movie</a>
                     <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-in-btn" href="/login">Sign in</a>
                     <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-up-btn" href="/register">Sign up</a>
@@ -28,15 +28,24 @@
             </div>
         </nav>
 
-        <div id="movies" class="container" >
+        <div id="create-movie-form" class="container">
+            <div class="row mt-5">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <iframe class="w-100" height="500" src="{{.Link}}" title="{{.Name}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <h2 class="film-title m-2">{{.Name}}</h2>
+                    <h3 class="shared-by">Shared by: {{.SharedBy}}</h3>
+                    <h3 class="description-title">Description:</h3>
+                    <p class="description">{{.Description}}</p>
+                </div>
+                <div class="col-2"></div>
+            </div>
         </div>
     </div>
 
     <script>
         $(document).ready(function() {
-            loadMovies();
-
-            if (window.localStorage.token === null || window.localStorage.token === "") {
+            if (window.localStorage.username === null || window.localStorage.username === "") {
                 $("#share-btn").hide();
                 $("#sign-out-btn").hide();
             } else {
@@ -52,68 +61,6 @@
             window.localStorage.token = "";
             location.href = "/";
         });
-
-        var offset = 0;
-        const limit = 7;
-            
-        function loadMovies() {
-            $.ajax({
-                type: "POST",
-                url: "{{.URL}}/api/v1/listMovies",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    limit: 7,
-                    offset: offset,
-                }),
-            }).done(function(data) {
-                movies = data.movies;
-
-                if (movies === null || movies.length === 0) {
-                    return
-                }
-                console.log(movies);
-
-                let moviesHtml = $('#movies');
-
-                for (let movie of movies) {
-                    let movieHtml = `
-                <div class="row mt-5">
-                    <div class="col-0 col-sm-0 col-md-0 col-lg-2"></div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-                        <img src="${movie.thumbnail}" width="400" height="300"></img>
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-                        <a class="film-title" href="/movie?id=${movie.id}" style="text-decoration: none;">${truncateSentence(movie.name, 100)}</a>
-                        <h3 class="shared-by">Shared by: ${movie.shared_by}</h3>
-                        <h3 class="description-title">Description:</h3>
-                        <p class="description">${truncateSentence(movie.description, 400)}</p>
-                    </div>
-                    <div class="col-0 col-sm-0 col-md-0 col-lg-2"></div>
-                </div>
-            `;
-                    moviesHtml.append(movieHtml);
-                }
-
-                offset = offset + limit;
-            }).fail(function (jqXHR, textStatus, error) {
-                console.log(jqXHR, textStatus, error)
-            });
-        }
-
-        window.addEventListener('scroll',()=>{
-            if(window.scrollY + window.innerHeight >= 
-            document.documentElement.scrollHeight){
-                loadMovies();                                   
-            }
-        })
-
-        function truncateSentence(sentence, maxLength) {
-            if (sentence.length < maxLength) {
-                return sentence
-            }
-
-            return sentence.slice(0, maxLength - 5) + "....."
-        }
     </script>
 
     <style>

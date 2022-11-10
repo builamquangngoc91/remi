@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <title>Home</title>
+    <title>Share movie</title>
 </head>
 <body>
     <div class="main">
@@ -15,12 +15,12 @@
             <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                    Funny Movies
+                    <p class="d-inline" style="font-weight: bold;">Funny Movies</p> 
                 </a>
 
                 <div class="d-flex align-items-center">
-                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" href="/login">Sign in</a>
-                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" href="/register">Sign up</a>
+                    <p class="my-sm-0 me-2" id="username-nav" style="font-weight: bold;"></p>
+                    <a class="btn btn-outline-primary my-2 my-sm-0 me-2" id="sign-out-btn" href="#">Sign out</a>
                 </div>
             </div>
         </nav>
@@ -73,15 +73,64 @@
         </div>
     </div>
 
+    <div id="toast-panel" class="toast align-items-center position-fixed bottom-0 end-0 p-2 m-5" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <p id="toast-message" class="m-0"></p> 
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" onclick="closeToast()"></button>
+        </div>
+    </div>
+
     <script>
+        if (window.localStorage.token === null || window.localStorage.token === "") {
+            window.location.href = "/";
+        } else {
+            $("#username-nav").text("Welcome " + window.localStorage.username);
+        }
+
+        function showToast(message, typ) {
+            switch (typ) {
+                case "error": 
+                    $("#toast-panel").css("background-color", "#f9e1e5");
+                    $("#toast-message").css("color", "#af233a");
+                    $("#toast-message").text(message);
+                    break;
+                
+                case "success":
+                    $("#toast-panel").css("background-color", "#d6f0e0");
+                    $("#toast-message").css("color", "#0d6831");
+                    $("#toast-message").text(message);
+                    break;
+            }
+
+            $("#toast-panel").addClass("show");
+            setTimeout(function() {
+                $("#toast-panel").removeClass("show");
+            }, 3000);
+        }
+
+        function closeToast() {
+            $("#toast-panel").removeClass("show");
+        }
+
         $("#name").bind("change paste keyup",function() {
             loadPreview();
+            if ($("#name").val() !== "") {
+                $("#name").removeClass("is-invalid");
+            }
         });
         $("#description").bind("change paste keyup", function() {
             loadPreview();
+            if ($("#description").val() !== "") {
+                $("#description").removeClass("is-invalid");
+            }
         })
         $("#link").bind("change paste keyup", function() {
             loadPreview();
+            if ($("#link").val() !== "") {
+                $("#link").removeClass("is-invalid");
+            }
         })
 
         function loadPreview() {
@@ -118,29 +167,56 @@
             let link = $("#link").val();
             let description = $("#description").val();
 
-            console.log("123")
+            let isInvalid = false;
+            if (name === "") {
+                $("#name").addClass("is-invalid");
+                isInvalid = true;
+            }
+            if (link === "") {
+                $("#link").addClass("is-invalid");
+                isInvalid = true;
+            }
 
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "{{.URL}}/api/v1/createMovie",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    name: name,
-                    link: link,
-                    description: description,
-                }),
-                headers: {
-                    "authorization": window.localStorage.getItem("token"),
-                },
-            }).done(function(data) {
-                console.log("success");
-                $("#name").val("");
-                $("#link").val("");
-                $("#description").val("");
-            }).fail(function (jqXHR, textStatus, error) {
-                console.log(jqXHR, textStatus, error)
-            });
+            const regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})?$/g;
+
+            if (link.match(regex) === null) {
+                $("#link").addClass("is-invalid");
+                isInvalid = true;
+                showToast("Link only support for youtube link", "error");
+            }
+
+            if (description === "") {
+                $("#description").addClass("is-invalid");
+                isInvalid = true;
+            }
+
+            if (!isInvalid) {
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "{{.URL}}/api/v1/createMovie",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        name: name,
+                        link: link,
+                        description: description,
+                    }),
+                    headers: {
+                        "authorization": window.localStorage.getItem("token"),
+                    },
+                }).done(function(data) {
+                    $("#name").val("");
+                    $("#link").val("");
+                    $("#description").val("");
+                    $("#image-preview").attr("src", "https://dummyimage.com/400x300/000000");
+                    $("#name-preview").text("");
+                    $("#description-preview").text("");
+
+                    showToast("Share movie successfully", "success"); 
+                }).fail(function (jqXHR, textStatus, error) {
+                    showToast(jqXHR.responseJSON.error, "error");
+                });
+            }
         })
     </script>
 

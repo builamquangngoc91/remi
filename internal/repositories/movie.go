@@ -57,6 +57,20 @@ func (r *MovieRepository) FindByIDAndUserID(ctx context.Context, id, userID stri
 	return movie, nil
 }
 
+func (r *MovieRepository) FindByID(ctx context.Context, id string) (*entities.Movie, error) {
+	movie := &entities.Movie{}
+	fields, values := movie.FieldMap()
+
+	stmt := fmt.Sprintf(`SELECT %s FROM %s WHERE id = $1 AND deleted_at IS NULL`, strings.Join(fields, ","), movie.TableName())
+	row := r.QueryRowContext(ctx, stmt, id)
+
+	if err := row.Scan(values...); err != nil {
+		return nil, fmt.Errorf("row.Scan: %w", err)
+	}
+
+	return movie, nil
+}
+
 type ListMoviesArgs struct {
 	UserID *string
 	Offset *int

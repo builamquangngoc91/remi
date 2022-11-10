@@ -44,7 +44,7 @@ func (s *MovieService) Create(ctx context.Context, req *up.CreateMovieRequest) (
 
 	_url, err := url.Parse(req.Link)
 	if err != nil {
-		panic(err)
+		return nil, xerror.Error(xerror.Internal, fmt.Errorf("url.Parse: %w", err))
 	}
 	params, err := url.ParseQuery(_url.RawQuery)
 	if err != nil {
@@ -197,4 +197,53 @@ func (s *MovieService) GetCreateMoviePage(w http.ResponseWriter, r *http.Request
 		URL: s.url,
 	}
 	tmpl.Execute(w, data)
+}
+
+type ViewMovieData struct {
+	Name        string
+	Link        string
+	SharedBy    string
+	Description string
+}
+
+func (s *MovieService) GetViewMoviePage(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/movie.html"))
+
+	params := r.URL.Query()
+	ids, ok := params["id"]
+	if !ok || len(ids) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	ctx := context.Background()
+
+	movie, err := s.movieRepo.FindByID(ctx, ids[0])
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	user, err := s.userRepo.FindByID(ctx, movie.SharedBy)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	_url, err := url.Parse(movie.Link)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	params, err = url.ParseQuery(_url.RawQuery)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	youtubeVideoID := params["v"][0]
+
+	viewMovieData := ViewMovieData{
+		Link:        fmt.Sprintf("https://www.youtube.com/embed/%s", youtubeVideoID),
+		Name:        movie.Name,
+		Description: movie.Description,
+		SharedBy:    user.Name,
+	}
+
+	tmpl.Execute(w, viewMovieData)
 }

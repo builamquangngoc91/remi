@@ -79,7 +79,7 @@ func (s *UserService) Login(ctx context.Context, req *up.LoginRequest) (*up.Logi
 		if err != sql.ErrNoRows {
 			return nil, xerror.Error(xerror.Internal, fmt.Errorf("s.userRepo.FindByUsername: %w", err))
 		}
-		return nil, xerror.Error(xerror.UnAuthorized, fmt.Errorf("incorrect username/pwd: %w", err))
+		return nil, xerror.Error(xerror.UnAuthorized, fmt.Errorf("incorrect username/pwd"))
 	}
 
 	if user == nil || !crypto.CheckPasswordHash(req.Password, user.Password) {

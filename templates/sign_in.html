@@ -13,9 +13,9 @@
     <div class="main">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
-                <a class="navbar-brand" href="/home">
-                    <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                    Funny Movies
+                <a class="navbar-brand" href="/">
+                  <img src="./film-svgrepo-com.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                  <p class="d-inline" style="font-weight: bold;">Funny Movies</p>
                 </a>
 
                 <a class="btn btn-outline-primary my-2 my-sm-0" href="/register">Sign up</a>
@@ -68,27 +68,89 @@
             </div>
         </section>
     </div>
+
+    <div id="toast-panel" class="toast align-items-center position-fixed bottom-0 end-0 p-2 m-5" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <p id="toast-message" class="m-0"></p> 
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" onclick="closeToast()"></button>
+      </div>
+    </div>
   
     <script>
+        function showToast(message, typ) {
+          switch (typ) {
+            case "error": 
+              $("#toast-panel").css("background-color", "#f9e1e5");
+              $("#toast-message").css("color", "#af233a");
+              $("#toast-message").text(message);
+              break;
+            
+            case "success":
+              $("#toast-panel").css("background-color", "#d6f0e0");
+              $("#toast-message").css("color", "#0d6831");
+              $("#toast-message").text(message);
+              break;
+          }
+
+          $("#toast-panel").addClass("show");
+          setTimeout(function() {
+            $("#toast-panel").removeClass("show");
+          }, 3000);
+        }
+        
+        function closeToast() {
+          $("#toast-panel").removeClass("show");
+        }
+
+        $("#username").bind("change paste keyup", function(e) {
+          if ($("#username").val() !== "") {
+            $("#username").removeClass("is-invalid");
+          }
+        });
+
+        $("#password").bind("change paste keyup", function(e) {
+          if ($("#password").val() !== "") {
+            $("#password").removeClass("is-invalid");
+          }
+        });
+
         $("#signInBtn").click(function(e) {
             let username = $("#username").val();
             let password = $("#password").val();
 
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "{{.URL}}/api/v1/login",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            }).done(function(data) {
+            let isInvalid = false;
+            if (username === "") {
+              $("#username").addClass("is-invalid");
+              isInvalid = true;
+            }
+            if (password === "") {
+              $("#password").addClass("is-invalid");
+              isInvalid = true;
+            }
+
+            if (!isInvalid) {
+              e.preventDefault();
+              $.ajax({
+                  type: "POST",
+                  url: "{{.URL}}/api/v1/login",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                      username: username,
+                      password: password,
+                  }),
+              }).done(function(data) {
                 window.localStorage.setItem('token', data.token);
+                window.localStorage.setItem('username', data.username)
                 window.location.href = "/"
-            }).fail(function (jqXHR, textStatus, error) {
+              }).fail(function (jqXHR, textStatus, error) {
                 console.log(jqXHR, textStatus, error)
-            });
+                $("#username").val("");
+                $("#password").val("");
+                showToast(jqXHR.responseJSON.error, "error");
+              });
+            }
         })
     </script>
 </body>
