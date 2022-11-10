@@ -21,7 +21,7 @@ func (r *CreateMovieRequest) Validate() error {
 		return xerror.ErrorM(xerror.InvalidArgument, nil, "link can't be null")
 	}
 	if strings.TrimSpace(r.Description) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "description can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "description can't be empty")
 	}
 
 	return nil
@@ -37,7 +37,7 @@ type GetMovieByUserRequest struct {
 
 func (r *GetMovieByUserRequest) Validate() error {
 	if strings.TrimSpace(r.ID) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "id can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "id can't be empty")
 	}
 
 	return nil
@@ -84,3 +84,31 @@ type Movie struct {
 	SharedBy    string    `json:"shared_by"`
 	SharedAt    time.Time `json:"shared_at"`
 }
+
+type LikeMovieRequest struct {
+	ID string `json:"id"`
+}
+
+func (r *LikeMovieRequest) Validate() error {
+	if strings.TrimSpace(r.ID) == "" {
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "id can't be empty")
+	}
+
+	return nil
+}
+
+type LikeMovieResponse struct{}
+
+type DislikeMovieRequest struct {
+	ID string `json:"id"`
+}
+
+func (r *DislikeMovieRequest) Validate() error {
+	if strings.TrimSpace(r.ID) == "" {
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "id can't be empty")
+	}
+
+	return nil
+}
+
+type DislikeMovieResponse struct{}

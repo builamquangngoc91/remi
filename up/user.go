@@ -14,13 +14,13 @@ type RegisterRequest struct {
 
 func (r *RegisterRequest) Validate() error {
 	if strings.TrimSpace(r.Username) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "username can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "username can't be empty")
 	}
 	if strings.TrimSpace(r.Password) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "password can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "password can't be empty")
 	}
 	if strings.TrimSpace(r.Name) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "name can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "name can't be empty")
 	}
 
 	return nil
@@ -35,10 +35,10 @@ type LoginRequest struct {
 
 func (r *LoginRequest) Validate() error {
 	if strings.TrimSpace(r.Username) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "username can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "username can't be empty")
 	}
 	if strings.TrimSpace(r.Password) == "" {
-		return xerror.ErrorM(xerror.InvalidArgument, nil, "password can't be null")
+		return xerror.ErrorM(xerror.InvalidArgument, nil, "password can't be empty")
 	}
 	return nil
 }

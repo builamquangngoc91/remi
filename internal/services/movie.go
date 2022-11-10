@@ -190,6 +190,15 @@ func (s *MovieService) ListMovies(ctx context.Context, req *up.ListMoviesRequest
 	return resp, nil
 }
 
+func (s *MovieService) LikeMovie(ctx context.Context, req *up.LikeMovieRequest) (*up.LikeMovieResponse, error) {
+	
+	return nil, nil
+}
+
+func (s *MovieService) DislikeMovie(ctx context.Context, req *up.DislikeMovieRequest) (*up.DislikeMovieResponse, error) {
+	return nil, nil
+}
+
 func (s *MovieService) GetCreateMoviePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/movie_create.html"))
 

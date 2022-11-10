@@ -91,6 +91,20 @@ func NewRemiService(db *sql.DB, JWTKey, url string) *RemiService {
 					ResponseType: JSON,
 				},
 			},
+			"/api/v1/likeMove": {
+				http.MethodPost: Decl{
+					HandlerFunc:  movieService.LikeMovie,
+					Auth:         None,
+					ResponseType: JSON,
+				},
+			},
+			"/api/v1/dislikeMove": {
+				http.MethodPost: Decl{
+					HandlerFunc:  movieService.DislikeMovie,
+					Auth:         None,
+					ResponseType: JSON,
+				},
+			},
 			"/login": {
 				http.MethodGet: Decl{
 					HandlerFunc:  userService.GetLoginPage,

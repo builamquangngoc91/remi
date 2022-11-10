@@ -75,6 +75,9 @@
 
                 let moviesHtml = $('#movies');
 
+                const likeImg = "https://www.svgrepo.com/show/45600/like.svg";
+                const dislikeImg = "https://www.svgrepo.com/show/51847/dislike.svg";
+
                 for (let movie of movies) {
                     let movieHtml = `
                 <div class="row mt-5">
@@ -84,8 +87,23 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                         <a class="film-title" href="/movie?id=${movie.id}" style="text-decoration: none;">${truncateSentence(movie.name, 100)}</a>
-                        <h3 class="shared-by">Shared by: ${movie.shared_by}</h3>
-                        <h3 class="description-title">Description:</h3>
+                        <div class="row">
+                            <div class="col-7">
+                                <h3 class="shared-by">Shared by: ${movie.shared_by}</h3>
+                                <h3 class="description-title">Description:</h3>
+                            </div>
+                            <div class="col-5 pt-3">
+                                <div class="d-inline">
+                                    <div class="rounded-pill" style="background-color: #ddd; width: auto; display: inline-block; padding: 0.5rem;">
+                                        <p class="d-inline" style="line-height: 100%; text-align: center;">50</p>
+                                        <img src="${likeImg}" height="23" width="23"><div class="m-1" style=" height: 20px; border-left: 1px black solid; display: inline;"></div>
+                                        <img src="${dislikeImg}" height="25" width="25">
+                                        <p class="d-inline" style="line-height: 100%; text-align: center;">30</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <p class="description">${truncateSentence(movie.description, 400)}</p>
                     </div>
                     <div class="col-0 col-sm-0 col-md-0 col-lg-2"></div>
