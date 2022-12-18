@@ -13,40 +13,39 @@ spec:
         app: remi
     spec:
       containers:
-      - name: remi
-        image: quangngoc430/remi:v1.0.2
-        ports:
-          - containerPort: 8080
-        env:
-          - name: POSTGRES_PORT
-            value: "5432"
-          - name: POSTGRES_PROTOCOL
-            value: postgres
-          - name: POSTGRES_USERNAME
-            value: postgres
-          - name: POSTGRES_PASSWORD
-            value: postgres
-          - name: POSTGRES_DATABASE
-            value: remi
-          - name: JWT_SECRET
-            value: secret
-          - name: HTTP_PORT
-            value: "8080"
-          - name: URL
-            value: http://34.100.202.154
-        imagePullPolicy: Always
+        - name: remi
+          image: quangngoc430/remi:v1.0.2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_PROTOCOL
+              value: postgres
+            - name: POSTGRES_USERNAME
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DATABASE
+              value: remi
+            - name: JWT_SECRET
+              value: secret
+            - name: HTTP_PORT
+              value: "8080"
+            - name: URL
+              value: http://localhost:8080
+          imagePullPolicy: Always
 
 ---
-
 apiVersion: v1
-kind: Service                    
+kind: Service
 metadata:
-  name: remi-service  
+  name: remi-service
 spec:
   type: LoadBalancer
-  ports:                        
-  - name: http
-    port: 80
-    targetPort: 8080
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
   selector:
-    app: remi        
+    app: remi

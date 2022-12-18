@@ -1,6 +1,4 @@
--- +migrate Up
-
--- +migrate StatementBegin
+-- +goose Up
 CREATE TABLE "users" (
    id TEXT PRIMARY KEY,
    username TEXT NOT NULL UNIQUE,
@@ -9,8 +7,6 @@ CREATE TABLE "users" (
    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
--- +migrate StatementEnd
 
--- +migrate Down
-
+-- +goose Down
 DROP TABLE "users";

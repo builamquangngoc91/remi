@@ -1,6 +1,4 @@
--- +migrate Up
-
--- +migrate StatementBegin
+-- +goose Up
 CREATE TABLE "movies" (
    id TEXT PRIMARY KEY,
    name TEXT NOT NULL,
@@ -13,8 +11,6 @@ CREATE TABLE "movies" (
    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    deleted_at TIMESTAMPTZ
 );
--- +migrate StatementEnd
 
--- +migrate Down
-
+-- +goose Down
 DROP TABLE "movies";

@@ -1,5 +1,5 @@
 ci:
   dialect: postgres
-  datasource: postgres://postgres:postgres@localhost:5432/test?sslmode=disable
+  datasource: postgres://postgres:postgres@localhost:5432/remi?sslmode=disable
   dir: migrations/sql
   table: migrations
